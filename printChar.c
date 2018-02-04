@@ -177,6 +177,9 @@ void printChar(char character, int dx, int dy, int r, int g, int b){
         case 'q':
             file = fopen("characters/q.txt", "r");
             break;
+        case 'f':
+            file = fopen("characters/f.txt", "r");
+            break;
     }
 
     clearScreen();
