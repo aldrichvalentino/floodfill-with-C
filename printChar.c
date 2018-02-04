@@ -192,8 +192,8 @@ void printChar(char character, int dx, int dy, int r, int g, int b){
     for(j = 0; j < lines; j++){
         int x = 0, y = 0;
         fscanf(file, "%d %d", &x, &y);        
-        coordinates[j*2] = x;
-        coordinates[(j*2)+1] = y;
+        coordinates[j*2] = x + dx;
+        coordinates[(j*2)+1] = y + dy;
     }
 
     // get number of triangles
