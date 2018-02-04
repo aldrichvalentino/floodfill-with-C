@@ -140,21 +140,21 @@ void floodFill(int x, int y, int r, int g, int b, int newcolor)
         munmap(fbp, screensize);
         close(fbfd);
 
-        floodFill(x+1,y,dx,dy,r,g,b,newcolor);
+        floodFill(x+1,y,r,g,b,newcolor);
         
-        floodFill(x+1,y+1,dx,dy,r,g,b,newcolor);
+        floodFill(x+1,y+1,r,g,b,newcolor);
         
-        floodFill(x,y+1,dx,dy,r,g,b,newcolor);
+        floodFill(x,y+1,r,g,b,newcolor);
 
-        floodFill(x-1,y+1,dx,dy,r,g,b,newcolor);
+        floodFill(x-1,y+1,r,g,b,newcolor);
 
-        floodFill(x-1,y,dx,dy,r,g,b,newcolor);
+        floodFill(x-1,y,r,g,b,newcolor);
         
-        floodFill(x-1,y-1,dx,dy,r,g,b,newcolor);
+        floodFill(x-1,y-1,r,g,b,newcolor);
         
-        floodFill(x,y-1,dx,dy,r,g,b,newcolor);
+        floodFill(x,y-1,r,g,b,newcolor);
 
-        floodFill(x+1,y-1,dx,dy,r,g,b,newcolor);
+        floodFill(x+1,y-1,r,g,b,newcolor);
         
     } else {
         munmap(fbp, screensize);
