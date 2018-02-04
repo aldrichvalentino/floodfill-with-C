@@ -135,27 +135,13 @@ void floodFill(int x, int y, int r, int g, int b, int newcolor)
         *(fbp + location + 2) = newcolor;    // A lot of red
         *(fbp + location + 3) = 0;      // No transparency
 
-        //printf("1\n");
-
         munmap(fbp, screensize);
         close(fbfd);
 
         floodFill(x+1,y,r,g,b,newcolor);
-        
-        floodFill(x+1,y+1,r,g,b,newcolor);
-        
         floodFill(x,y+1,r,g,b,newcolor);
-
-        floodFill(x-1,y+1,r,g,b,newcolor);
-
         floodFill(x-1,y,r,g,b,newcolor);
-        
-        floodFill(x-1,y-1,r,g,b,newcolor);
-        
         floodFill(x,y-1,r,g,b,newcolor);
-
-        floodFill(x+1,y-1,r,g,b,newcolor);
-        
     } else {
         munmap(fbp, screensize);
         close(fbfd);
@@ -164,116 +150,210 @@ void floodFill(int x, int y, int r, int g, int b, int newcolor)
 }
 
 void printChar(char character, int dx, int dy, int r, int g, int b){
-    FILE *test;
-    char i;
     int lines, j;
-    int *coordinates;
-
+    char i;
+    int *coordinates, *triangles;
+    FILE *file;
+    
     switch (character) {
-        case 'a':
-            test = fopen("characters/a.txt", "r");
+        case 'S':
+            file = fopen("characters/S.txt", "r");
             break;
-        case 'b':
-            test = fopen("characters/b.txt", "r");
+        case 's':
+            file = fopen("characters/s.txt", "r");
             break;
         case 'c':
-            test = fopen("characters/c.txt", "r");
-            break;
-        case 'd':
-            test = fopen("characters/d.txt", "r");
-            break;
-        case 'f':
-            test = fopen("characters/f.txt", "r");
-            break;
-        case 'g':
-            test = fopen("characters/g.txt", "r");
-            break;
-        case 'h':
-            test = fopen("characters/h.txt", "r");
-            break;
-        case 'i':
-            test = fopen("characters/i.txt", "r");
+            file = fopen("characters/c.txt", "r");
             break;
         case 'j':
-            test = fopen("characters/j.txt", "r");
+            file = fopen("characters/j.txt", "r");
             break;
-        case 'l':
-            test = fopen("characters/l.txt", "r");
-            break;
-        case 'm':
-            test = fopen("characters/m.txt", "r");
-            break;
-        case 'n':
-            test = fopen("characters/n.txt", "r");
-            break;
-        case 'o':
-            test = fopen("characters/o.txt", "r");
+        case 'V':
+            file = fopen("characters/V.txt", "r");
             break;
         case 'r':
-            test = fopen("characters/r.txt", "r");
+            file = fopen("characters/r.txt", "r");
             break;
-        case 'u':
-            test = fopen("characters/u.txt", "r");
-            break;
-        case 'y':
-            test = fopen("characters/y.txt", "r");
-            break;
-        case 'z':
-            test = fopen("characters/z.txt", "r");
+        case 'q':
+            file = fopen("characters/q.txt", "r");
             break;
     }
 
-    if(test != NULL){
-        i = fgetc(test);
-        lines = atoi(&i); // number of lines
-        i = fgetc(test); // delete enter
-        
-        coordinates = (int*) malloc ((4 * lines) * sizeof(int));
+    clearScreen();
 
-        for(i = 0; i < lines; i++){
-            int temp = 0, temp1 = 0, temp2 = 0, temp3 = 0;
-            for(j = 0; j < 3; j++){
-                char c = fgetc(test) - 48;
-                temp = temp*10 + c;
-            }
-            fgetc(test);
-
-            for(j = 0; j < 3; j++){
-                char c = fgetc(test) - 48;
-                temp1 = temp1*10 + c;
-            }
-            fgetc(test);
-
-            for(j = 0; j < 3; j++){
-                char c = fgetc(test) - 48;
-                temp2 = temp2*10 + c;
-            }
-            fgetc(test);
-
-            for(j = 0; j < 3; j++){
-                char c = fgetc(test) - 48;
-                temp3 = temp3*10 + c;
-            }
-            fgetc(test);
-
-            coordinates[(i*4)] = temp;
-            coordinates[(i*4)+1] = temp1;
-            coordinates[(i*4)+2] = temp2;
-            coordinates[(i*4)+3] = temp3;
-        }
-        //printf("keluar\n");
-
-        for(i = 0; i < lines; i++){
-            line(coordinates[i*4], 
-                coordinates[i*4+1],
-                coordinates[i*4+2],
-                coordinates[i*4+3],
-                dx, dy, r, g, b);
-        }
+    // get number of point
+    fscanf(file, "%d", &lines);
     
-        free(coordinates);
-        fclose(test);
+    // array of point
+    coordinates = (int*) malloc ((2 * lines) * sizeof(int));
+    for(j = 0; j < lines; j++){
+        int x = 0, y = 0;
+        fscanf(file, "%d %d", &x, &y);        
+        coordinates[j*2] = x;
+        coordinates[(j*2)+1] = y;
     }
+
+    // get number of triangles
+    fscanf(file, "%d", &lines);
+    
+    // array of point
+    triangles = (int*) malloc ((3 * lines) * sizeof(int));
+    for(j = 0; j < lines; j++){
+        int point1, point2, point3;
+        fscanf(file, "%d %d %d", &point1, &point2, &point3);        
+        triangles[j*3] = point1;
+        triangles[(j*3)+1] = point2;
+        triangles[(j*3)+2] = point3;
+    }
+
+    // print the char
+    for(i = 0; i < lines; i++){
+        int point1, point2, point3;
+        int x0, y0, x1, y1, x2, y2;
+
+        point1 = triangles[(i*3)];
+        point2 = triangles[(i*3)+1];
+        point3 = triangles[(i*3)+2];
+        
+        x0 = coordinates[point1*2];
+        y0 = coordinates[(point1*2+1)];
+
+        x1 = coordinates[point2*2];
+        y1 = coordinates[(point2*2+1)];
+
+        x2 = coordinates[point3*2];
+        y2 = coordinates[(point3*2+1)];
+
+        line(x0, y0, x1, y1, 0, 0, 255, 255, 255);
+        line(x0, y0, x2, y2, 0, 0, 255, 255, 255);
+        line(x2, y2, x1, y1, 0, 0, 255, 255, 255);
+
+        int middleX = (x0 + x1 + x2)/3;
+        int middleY = (y0 + y1 + y2)/3;
+
+        floodFill(middleX, middleY, 0,0,0, 255);
+    }
+
+    fclose(file);
+    printf("oke\n");
+
+
+    // FILE *file;
+    // int lines, j;
+    // char i;
+    // int *coordinates, *triangles;
+    
+    // switch (character) {
+    //     case 'a':
+    //         file = fopen("characters/a.txt", "r");
+    //         break;
+    //     case 'b':
+    //         file = fopen("characters/b.txt", "r");
+    //         break;
+    //     case 'c':
+    //         file = fopen("characters/c.txt", "r");
+    //         break;
+    //     case 'd':
+    //         file = fopen("characters/d.txt", "r");
+    //         break;
+    //     case 'f':
+    //         file = fopen("characters/f.txt", "r");
+    //         break;
+    //     case 'g':
+    //         file = fopen("characters/g.txt", "r");
+    //         break;
+    //     case 'h':
+    //         file = fopen("characters/h.txt", "r");
+    //         break;
+    //     case 'i':
+    //         file = fopen("characters/i.txt", "r");
+    //         break;
+    //     case 'j':
+    //         file = fopen("characters/j.txt", "r");
+    //         break;
+    //     case 'l':
+    //         file = fopen("characters/l.txt", "r");
+    //         break;
+    //     case 'm':
+    //         file = fopen("characters/m.txt", "r");
+    //         break;
+    //     case 'n':
+    //         file = fopen("characters/n.txt", "r");
+    //         break;
+    //     case 'o':
+    //         file = fopen("characters/o.txt", "r");
+    //         break;
+    //     case 'r':
+    //         file = fopen("characters/r.txt", "r");
+    //         break;
+    //     case 'u':
+    //         file = fopen("characters/u.txt", "r");
+    //         break;
+    //     case 'y':
+    //         file = fopen("characters/y.txt", "r");
+    //         break;
+    //     case 'z':
+    //         file = fopen("characters/z.txt", "r");
+    //         break;
+    // }
+
+    // if(file != NULL){
+    //     // get number of point
+    //     fscanf(file, "%d", &lines);
+        
+    //     // array of point
+    //     coordinates = (int*) malloc ((2 * lines) * sizeof(int));
+    //     for(j = 0; j < lines; j++){
+    //         int x = 0, y = 0;
+    //         fscanf(file, "%d %d", &x, &y);        
+    //         coordinates[j*2] = x;
+    //         coordinates[(j*2)+1] = y;
+    //     }
+
+    //     // get number of triangles
+    //     fscanf(file, "%d", &lines);
+        
+    //     // array of point
+    //     triangles = (int*) malloc ((3 * lines) * sizeof(int));
+    //     for(j = 0; j < lines; j++){
+    //         int point1, point2, point3;
+    //         fscanf(file, "%d %d %d", &point1, &point2, &point3);        
+    //         triangles[j*3] = point1;
+    //         triangles[(j*3)+1] = point2;
+    //         triangles[(j*3)+2] = point3;
+    //     }
+
+    //     // print the char
+    //     for(i = 0; i < lines; i++){
+    //         int point1, point2, point3;
+    //         int x0, y0, x1, y1, x2, y2;
+
+    //         point1 = triangles[(i*3)];
+    //         point2 = triangles[(i*3)+1];
+    //         point3 = triangles[(i*3)+2];
+            
+    //         x0 = coordinates[point1*2];
+    //         y0 = coordinates[(point1*2+1)];
+
+    //         x1 = coordinates[point2*2];
+    //         y1 = coordinates[(point2*2+1)];
+
+    //         x2 = coordinates[point3*2];
+    //         y2 = coordinates[(point3*2+1)];
+
+    //         line(x0, y0, x1, y1, 0, 0, 255, 255, 255);
+    //         line(x0, y0, x2, y2, 0, 0, 255, 255, 255);
+    //         line(x2, y2, x1, y1, 0, 0, 255, 255, 255);
+
+    //         int middleX = (x0 + x1 + x2)/3;
+    //         int middleY = (y0 + y1 + y2)/3;
+
+    //         floodFill(middleX, middleY, 0,0,0, 255);
+    //     }
+    //     free(coordinates);
+    //     free(triangles);
+    //     fclose(file);
+    // }
 }
 
 void clearScreen() {
