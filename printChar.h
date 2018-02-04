@@ -11,6 +11,7 @@
 
 void line(int x0, int y0, int x1, int y1, int divx, int divy, int r, int g, int b);
 void printChar(char character, int dx, int dy, int r, int g, int b);
+void floodFill(int x, int y, int r, int g, int b, int newcolor);
 void clearScreen();
 
 #endif

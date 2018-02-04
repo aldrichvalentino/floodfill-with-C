@@ -71,6 +71,86 @@ void line(int x0, int y0, int x1, int y1, int divx, int divy, int r, int g, int 
     close(fbfd);
 }
 
+void floodFill(int x, int y, int r, int g, int b, int newcolor)
+{
+    int fbfd = 0;
+    struct fb_var_screeninfo vinfo;
+    struct fb_fix_screeninfo finfo;
+    long int screensize = 0;
+    char *fbp = 0;
+    int timer = 0;
+    long int location = 0;
+    int maxY;
+    int oldRed, oldGreen, oldBlue;
+
+    // Open the file for reading and writing
+    fbfd = open("/dev/fb0", O_RDWR);
+    if (fbfd == -1) {
+        perror("Error: cannot open framebuffer device");
+        exit(1);
+    }
+    //printf("The framebuffer device was opened successfully.\n");
+
+    // Get fixed screen information
+    if (ioctl(fbfd, FBIOGET_FSCREENINFO, &finfo) == -1) {
+        perror("Error reading fixed information");
+        exit(2);
+    }
+
+    // Get variable screen information
+    if (ioctl(fbfd, FBIOGET_VSCREENINFO, &vinfo) == -1) {
+        perror("Error reading variable information");
+        exit(3);
+    }
+
+    //printf("%dx%d, %dbpp\n", vinfo.xres, vinfo.yres, vinfo.bits_per_pixel);
+
+    // Figure out the size of the screen in bytes
+    screensize = vinfo.xres * vinfo.yres * vinfo.bits_per_pixel / 8;
+
+    // Map the device to memory
+    fbp = (char *)mmap(0, screensize, PROT_READ | PROT_WRITE, MAP_SHARED, fbfd, 0);
+    if (*fbp == -1) {
+        perror("Error: failed to map framebuffer device to memory");
+        exit(4);
+    }
+
+    
+    // Test
+    location = (x+vinfo.xoffset) * (vinfo.bits_per_pixel/8) +
+                        (y+vinfo.yoffset) * finfo.line_length;
+    
+    if(y > 10 && y < vinfo.yres -10){ // escape seg fault
+        oldRed = *(fbp + location);
+        oldGreen = *(fbp + location + 1);
+        oldBlue = *(fbp + location + 2);
+    }
+
+    //printf("%d %d %d\n", oldRed, oldGreen, oldBlue);
+
+    if(oldRed == 0 && oldGreen == 0 && oldBlue == 0)
+    {
+        *(fbp + location) = newcolor;        // Some blue
+        *(fbp + location + 1) = newcolor;     // A little green
+        *(fbp + location + 2) = newcolor;    // A lot of red
+        *(fbp + location + 3) = 0;      // No transparency
+
+        //printf("1\n");
+
+        munmap(fbp, screensize);
+        close(fbfd);
+
+        floodFill(x+1,y,r,g,b,newcolor);
+        floodFill(x,y+1,r,g,b,newcolor);
+        floodFill(x-1,y,r,g,b,newcolor);
+        floodFill(x,y-1,r,g,b,newcolor);
+    } else {
+        munmap(fbp, screensize);
+        close(fbfd);
+    }
+    
+}
+
 void printChar(char character, int dx, int dy, int r, int g, int b){
     FILE *test;
     char i;
