@@ -53,16 +53,17 @@ int main(void) {
         point2 = triangles[(i*3)+1];
         point3 = triangles[(i*3)+2];
         
-        x0 = coordinates[point1];
-        y0 = coordinates[point1+1];
+        x0 = coordinates[point1*2];
+        y0 = coordinates[(point1*2+1)];
 
-        x1 = coordinates[point2];
-        y1 = coordinates[point2+1];
+        x1 = coordinates[point2*2];
+        y1 = coordinates[(point2*2+1)];
 
-        x2 = coordinates[point3];
-        y2 = coordinates[point3+1];
+        x2 = coordinates[point3*2];
+        y2 = coordinates[(point3*2+1)];
 
-        printf("%d %d %d\n", point2, x1, y1);
+        printf("%d %d %d\n", point1, point2, point3);
+        //printf("%d %d %d %d %d %d\n", coordinates[point1], coordinates[(point1+1)], coordinates[point2], coordinates[(point2+1)], coordinates[point3], coordinates[(point3+1)]);
         line(x0, y0, x1, y1, 0, 0, 255, 255, 255);
         line(x0, y0, x2, y2, 0, 0, 255, 255, 255);
         line(x2, y2, x1, y1, 0, 0, 255, 255, 255);
