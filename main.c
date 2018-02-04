@@ -26,7 +26,7 @@ int main() {
 
     clearScreen();
     char inputCharacter;
-    printf("masukkan input karakter :");
+    printf("masukkan input karakter : ");
     scanf("%c", &inputCharacter);
 
     printChar(inputCharacter, 0, 0, 255, 255, 255);
