@@ -128,7 +128,7 @@ void floodFill(int x, int y, int r, int g, int b, int newcolor)
 
     //printf("%d %d %d\n", oldRed, oldGreen, oldBlue);
 
-    if(oldRed == 0 && oldGreen == 0 && oldBlue == 0)
+    if(oldRed == r && oldGreen == g && oldBlue == b)
     {
         *(fbp + location) = newcolor;        // Some blue
         *(fbp + location + 1) = newcolor;     // A little green
@@ -141,9 +141,21 @@ void floodFill(int x, int y, int r, int g, int b, int newcolor)
         close(fbfd);
 
         floodFill(x+1,y,r,g,b,newcolor);
+        
+        floodFill(x+1,y+1,r,g,b,newcolor);
+        
         floodFill(x,y+1,r,g,b,newcolor);
+
+        floodFill(x-1,y+1,r,g,b,newcolor);
+
         floodFill(x-1,y,r,g,b,newcolor);
+        
+        floodFill(x-1,y-1,r,g,b,newcolor);
+        
         floodFill(x,y-1,r,g,b,newcolor);
+
+        floodFill(x+1,y-1,r,g,b,newcolor);
+        
     } else {
         munmap(fbp, screensize);
         close(fbfd);
