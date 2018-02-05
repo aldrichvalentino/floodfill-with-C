@@ -25,11 +25,18 @@ int main() {
     unsigned char key;
 
     clearScreen();
-    char inputCharacter;
-    printf("masukkan input karakter : ");
-    scanf("%c", &inputCharacter);
+    // char inputCharacter;
+    // printf("masukkan input karakter : ");
+    // scanf("%c", &inputCharacter);
 
-    printChar(inputCharacter, 0, 0, 255, 255, 255);
+    printChar('c', 200, 200, 255, 255, 255);
+    printChar('f', 300, 200, 255, 255, 255);
+    printChar('j', 400, 200, 255, 255, 255);
+    printChar('q', 500, 200, 255, 255, 255);
+    printChar('s', 600, 200, 255, 255, 255);
+    printChar('r', 700, 200, 255, 255, 255);
+    printChar('S', 800, 200, 255, 255, 255);
+    printChar('V', 900, 200, 255, 255, 255);
 
 	return 0;
 }

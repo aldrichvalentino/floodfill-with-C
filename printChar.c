@@ -182,7 +182,7 @@ void printChar(char character, int dx, int dy, int r, int g, int b){
             break;
     }
 
-    clearScreen();
+    //clearScreen();
 
     // get number of point
     fscanf(file, "%d", &lines);
