@@ -1,4 +1,4 @@
-    #include "shootPlane.h"
+#include "shootPlane.h"
 
 void line(int x0, int y0, int x1, int y1, int divx, int divy, int r, int g, int b) {
     int fbfd = 0;
@@ -146,13 +146,42 @@ void floodFill(int x, int y, int r, int g, int b, int newcolor)
         munmap(fbp, screensize);
         close(fbfd);
     }
-    
+
 }
 
-void printChar(char character, int dx, int dy, int r, int g, int b){
+void scaleChar(float *coordinates, int size, float scale) {
+    int i;
+    for(i = 0;i < size;i++) {
+        coordinates[i*2] *= scale;
+        coordinates[(i*2)+1] *= scale;
+    }
+}
+
+void rotateChar(float *coordinates, int size, float degree) {
+    int i;
+    double val;
+    val = PI/180;
+    float sinus = sin(degree*val);
+    printf("%f", sinus);
+    float minsin = -sinus;
+    float cosinus = cos(degree*val);
+    printf("%f", cosinus);
+    for(i = 0;i < size;i++) {
+        printf("x = ");
+        coordinates[i*2] = (coordinates[i*2] * cosinus) + (coordinates[(i*2)+1] * minsin);
+        printf("%f", coordinates[i*2]);
+        printf("\n y = ");
+        coordinates[(i*2)+1] = (coordinates[i*2] * sinus) + (coordinates[(i*2)+1] * cosinus);
+        printf("%f", coordinates[(i*2)+1]);
+        printf("\n");    
+    }
+}
+
+void printChar(char character, int dx, int dy, int r, int g, int b, float scale, float degree) {
     int lines, j;
     char i;
-    int *coordinates, *triangles;
+    float *coordinates; 
+    int *triangles;
     FILE *file;
     
     switch (character) {
@@ -188,13 +217,15 @@ void printChar(char character, int dx, int dy, int r, int g, int b){
     fscanf(file, "%d", &lines);
     
     // array of point
-    coordinates = (int*) malloc ((2 * lines) * sizeof(int));
+    coordinates = (float*) malloc ((2 * lines) * sizeof(float));
     for(j = 0; j < lines; j++){
         int x = 0, y = 0;
         fscanf(file, "%d %d", &x, &y);        
         coordinates[j*2] = x + dx;
         coordinates[(j*2)+1] = y + dy;
     }
+    scaleChar(coordinates, lines, scale);
+    rotateChar(coordinates, lines, degree);
 
     // get number of triangles
     fscanf(file, "%d", &lines);
@@ -227,9 +258,9 @@ void printChar(char character, int dx, int dy, int r, int g, int b){
         x2 = coordinates[point3*2];
         y2 = coordinates[(point3*2+1)];
 
-        line(x0, y0, x1, y1, 0, 0, 255, 255, 255);
-        line(x0, y0, x2, y2, 0, 0, 255, 255, 255);
-        line(x2, y2, x1, y1, 0, 0, 255, 255, 255);
+        line(x0, y0, x1, y1, 0, 0, r, g, b);
+        line(x0, y0, x2, y2, 0, 0, r, g, b);
+        line(x2, y2, x1, y1, 0, 0, r, g, b);
 
         int middleX = (x0 + x1 + x2)/3;
         int middleY = (y0 + y1 + y2)/3;

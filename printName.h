@@ -3,6 +3,6 @@
 
 #include "printChar.h"
 
-void printName(char* Name, int Length, int Y, int r, int g, int b);
+void printName(char* Name, int Length, int Y, int r, int g, int b, float scale, float degree);
 
 #endif
